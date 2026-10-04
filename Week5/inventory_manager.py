@@ -19,56 +19,78 @@ def load_inventory():
 def save_inventory(inventory):
     with open("inventory.json", "w") as file:
         json.dump(inventory, file, indent=4)
-    print("\nInventory saved successfully.\n")
 
 def display_all(inventory):
-    print("\nCurrent Inventory") 
-    print("----------------------------------------")
+    print("\nCurrent Inventory\n") 
+    print("-" * 48)
     for item in inventory:
         print(f"ID: {item['id']} | Name: {item['name']} | Price: ${item['price']:.2f} | Stock: {item['stock']}") 
-    print("----------------------------------------\n")
+    print("-" * 48)
 
 def add_product(inventory):
-    print("\n--- Add New Product ---")
-    prod_id = input("Enter Product ID: ")
-    name = input("Enter Product Name: \n")
+    print("\nAdd New Product\n")
+    prod_id = input("Product ID: ")
+    name = input("Product Name: ")
+    
     try:
-        price = float(input("Enter Product Price: \n"))
-        initial_stock = int(input("Enter Initial Quantity: \n"))
+        price = float(input("Price: "))
+        initial_stock = int(input("Stock Quantity: "))
     except ValueError:
         print("Error: Price must be a number and Quantity must be a whole number.\n")
         return
-    inventory.append({"id": prod_id, "name": name, "price": price, "stock": initial_stock, "history": [initial_stock]})
-    print(f"Success: Added '{name}' to inventory.\n")
+
+    new_product = {
+        "id": prod_id,
+        "name": name,
+        "price": price,
+        "stock": initial_stock,
+        "history": [initial_stock]
+    }
+    
+    inventory.append(new_product)
+    print("\nProduct added successfully!\n")
 
 def update_stock(inventory):
-    print("\n--- Update Stock ---")
-    prod_id = input("Enter Product ID to update: \n")
+    print("\nUpdate Stock")
+    prod_id = input("Enter Product ID: ")
+    
     for item in inventory:
         if item["id"] == prod_id:
+            print("Product Found:\n")
+            print(f"Name: {item['name']}\n")
+            print(f"Current Stock: {item['stock']}\n")
+            
             try:
-                transaction = int(input(f"Enter transaction amount for '{item['name']}': \n"))
+                new_stock = int(input("New Stock Quantity: "))
             except ValueError:
-                print("Error: Transaction must be a whole number.")
+                print("Error: Quantity must be a whole number.\n")
                 return
-            item["stock"] += transaction
-            item["history"].append(transaction)
-            print(f"Success: Stock updated. New total for '{item['name']}' is {item['stock']}.\n")
+            
+            # Replaces the old stock value with the new one
+            item["stock"] = new_stock
+            item["history"].append(new_stock)
+            
+            print("Stock updated successfully!\n")
             return
-    print("Error: Product ID not found.")
+            
+    print("Product not found.\n")
 
 def search_product(inventory):
-    print("\n--- Search Product ---")
-    search_term = input("Enter Product Name or ID: ").lower()
+    print("\nSearch Product\n")
+    search_term = input("Enter Product ID: ")
+    
     for item in inventory:
-        if item["id"].lower() == search_term or item["name"].lower() == search_term:
-            print("\n--- Search Result ---")
-            print(f"ID:      {item['id']}")
-            print(f"Name:    {item['name']}")
-            print(f"Price:   ${item['price']:.2f}")
-            print(f"Stock:   {item['stock']}")
+        if item["id"] == search_term:
+            print("Product Found\n")
+            print("-" * 48)
+            print(f"ID: {item['id']}")
+            print(f"Name: {item['name']}")
+            print(f"Price: ${item['price']:.2f}")
+            print(f"Stock: {item['stock']}")
+            print("-" * 48)
             return
-    print("No matching product found.")
+            
+    print("Product not found.\n")
 
 def main():
     print("========================================") 
@@ -79,7 +101,7 @@ def main():
     inventory = load_inventory()
 
     while True:
-        print("----------- MENU -----------") 
+        print("\n----------- MENU -----------") 
         print("1. Display All Products") 
         print("2. Add Product") 
         print("3. Update Stock") 
@@ -88,17 +110,29 @@ def main():
         print("6. Exit") 
         print("----------------------------") 
         
-        choice = input("\nEnter option: ") 
+        choice = input("Enter option: ") 
         
-        if choice == '1': display_all(inventory)
-        elif choice == '2': add_product(inventory)
-        elif choice == '3': update_stock(inventory)
-        elif choice == '4': search_product(inventory)
-        elif choice == '5': save_inventory(inventory) # Phase C: Wires up the save function
-        elif choice == '6': 
-            print("\nExiting program...")
+        if choice == '1':
+            display_all(inventory)
+        elif choice == '2':
+            add_product(inventory)
+        elif choice == '3':
+            update_stock(inventory)
+        elif choice == '4':
+            search_product(inventory)
+        elif choice == '5':
+            print("Saving inventory...\n")
+            save_inventory(inventory)
+            print("Inventory saved successfully to inventory.json.\n")
+        elif choice == '6':
+            print("Saving inventory before exit...\n")
+            save_inventory(inventory)
+            print("Inventory saved successfully.")
+            print("Thank you for using Inventory Management System.\n")
+            print("Program terminated.\n")
             break
-        else: print("\nInvalid selection. Please enter a number between 1 and 6.")
+        else:
+            print("Invalid selection.\n")
 
 if __name__ == "__main__":
     main()
