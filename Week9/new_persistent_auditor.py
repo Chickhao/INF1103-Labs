@@ -1,6 +1,12 @@
 import json
+from abc import ABC, abstractmethod
 
-class Product:
+class CanBeShipped(ABC):
+    @abstractmethod
+    def calculate_shipping_cost(self):
+        pass
+
+class Product(ABC):
     def __init__(self, product_id, name, price, stock, history=None):
         self.__product_id = product_id
         self.__name = name
@@ -23,6 +29,10 @@ class Product:
     def update_stock(self, quantity):
         self.__stock = quantity
         self.__history.append(self.__stock)
+
+    @abstractmethod
+    def get_fulfilment_info(self):
+        pass
 
     def display_information(self):
         print(
@@ -62,7 +72,7 @@ class Inventory:
     def get_products(self):
         return self.__products.copy()
 
-class PhysicalProduct(Product):
+class PhysicalProduct(Product, CanBeShipped):
     def __init__(self, product_id, name, price, stock, weight, history=None):
         super().__init__(product_id, name, price, stock, history)
         self.__weight = weight
@@ -70,6 +80,18 @@ class PhysicalProduct(Product):
     def display_information(self):
         super().display_information()
         print(f"Weight: {self.__weight} kg")
+
+    def get_fulfilment_info(self):
+        return f"This product requires physical shipping."
+
+    def calculate_shipping_cost(self):
+        return self.__weight * 5.00  # Example: $5 per kg
+
+    def to_dict(self):
+        data = super().to_dict()
+        data["type"] = "Physical"
+        data["weight"] = self.__weight
+        return data
 
 
 class DigitalProduct(Product):
@@ -81,10 +103,15 @@ class DigitalProduct(Product):
         super().display_information()
         print(f"File Size: {self.__file_size} MB")
 
-physical_product = PhysicalProduct("P004", "Smartphone", 800.00, 30, 0.2)
-digital_product = DigitalProduct("P005", "E-book", 15.00, 100, 5)
-physical_product.display_information()
-digital_product.display_information()
+    def get_fulfilment_info(self):
+        return f"This product is delievered digitally."
+
+    def to_dict(self):
+        data = super().to_dict()
+        data["type"] = "Digital"
+        data["file_size"] = self.__file_size
+        return data
+
 
 def load_inventory():
     try:
@@ -97,16 +124,23 @@ def load_inventory():
         print("inventory.json not found.")
         print("Inventory initialized with default products.\n")
         data = [
-            {"product_id": "P001", "name": "Laptop", "price": 1200.00, "stock": 15, "history": [15]},
-            {"product_id": "P002", "name": "Mouse", "price": 25.50, "stock": 40, "history": [40]},
-            {"product_id": "P003", "name": "Keyboard", "price": 45.00, "stock": 25, "history": [25]}
+            {"product_id": "P001", "name": "Laptop", "price": 1200.00, "stock": 15, "history": [15], "type": "Physical", "weight": [2.0]},
+            {"product_id": "P002", "name": "Mouse", "price": 25.50, "stock": 40, "history": [40], "type": "Physical", "weight": [0.1]},
+            {"product_id": "P003", "name": "Keyboard", "price": 45.00, "stock": 25, "history": [25], "type": "Physical", "weight": [0.8]}
         ]
 
     inventory = Inventory()
+
     for item in data:
-        product = Product(
-            item["product_id"], item["name"], item["price"], item["stock"], item["history"],
-        ) 
+        if item["type"] == "Physical":
+            product = PhysicalProduct(
+                item["product_id"], item["name"], item["price"], item["stock"], item["weight"], item["history"],
+            )
+        else:
+            product = DigitalProduct(
+                item["product_id"], item["name"], item["price"], item["stock"], item["file_size"], item["history"],
+            )
+
         inventory.add_product(product)
 
     return inventory
@@ -124,15 +158,26 @@ def add_product(inventory):
     print("\nAdd New Product\n")
     product_id = input("Product ID: ")
     name = input("Product Name: ")
+    product_type = input("Product Type (1. Physical, 2. Digital): ")
+
+    if product_type not in ("1", "2"):
+        print("Invalid Product Type. \n")
+        return
 
     try:
         price = float(input("Price: "))
         quantity = int(input("Stock Quantity: "))
+
+        if product_type == "1":
+            weight = float(input("Weight (kg): "))
+            new_product = PhysicalProduct(product_id, name, price, quantity, weight)
+        else:
+            file_size = float(input("File Size (MB): "))
+            new_product = DigitalProduct(product_id, name, price, quantity, file_size)
     except ValueError:
         print("Error: Price must be a number and Quantity must be a whole number.\n")
         return
 
-    new_product = Product(product_id, name, price, quantity)
     inventory.add_product(new_product)
     print("\nProduct added successfully!\n")
 
@@ -165,6 +210,27 @@ def search_product(inventory):
     else:
         print("Product not found.\n")
 
+physical = PhysicalProduct("P001", "Laptop", 1200.00, 15, 2.0)
+digital = DigitalProduct("D001", "E-book", 12.00, 100, 50.0)
+
+physical.display_information()
+digital.display_information()
+
+print(physical.get_fulfilment_info())
+print(digital.get_fulfilment_info())
+
+try:
+    Product("P000", "Generic Product", 10.00, 1)
+except TypeError as error:
+    print(f"Error: {error}")
+
+light_product = PhysicalProduct("P002", "Lightweight Item", 10.00, 1, 1.0)
+heavy_product = PhysicalProduct("P003", "Heavy Item", 10.00, 1, 3.0)
+
+print(light_product.calculate_shipping_cost())  # Output: 5.0
+print(heavy_product.calculate_shipping_cost())  # Output: 5.0
+
+'''
 def main():
     print("========================================") 
     print("INVENTORY MANAGEMENT SYSTEM") 
@@ -211,3 +277,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+'''
