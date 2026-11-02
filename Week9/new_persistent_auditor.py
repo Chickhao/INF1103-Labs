@@ -124,9 +124,9 @@ def load_inventory():
         print("inventory.json not found.")
         print("Inventory initialized with default products.\n")
         data = [
-            {"product_id": "P001", "name": "Laptop", "price": 1200.00, "stock": 15, "history": [15], "type": "Physical", "weight": [2.0]},
-            {"product_id": "P002", "name": "Mouse", "price": 25.50, "stock": 40, "history": [40], "type": "Physical", "weight": [0.1]},
-            {"product_id": "P003", "name": "Keyboard", "price": 45.00, "stock": 25, "history": [25], "type": "Physical", "weight": [0.8]}
+            {"product_id": "P001", "name": "Laptop", "price": 1200.00, "stock": 15, "history": [15], "type": "Physical", "weight": 2.0},
+            {"product_id": "P002", "name": "Mouse", "price": 25.50, "stock": 40, "history": [40], "type": "Physical", "weight": 0.1},
+            {"product_id": "P003", "name": "Keyboard", "price": 45.00, "stock": 25, "history": [25], "type": "Physical", "weight": 0.8}
         ]
 
     inventory = Inventory()
@@ -210,6 +210,9 @@ def search_product(inventory):
     else:
         print("Product not found.\n")
 
+''' 
+Test Code for PhysicalProduct and DigitalProduct classes:
+
 physical = PhysicalProduct("P001", "Laptop", 1200.00, 15, 2.0)
 digital = DigitalProduct("D001", "E-book", 12.00, 100, 50.0)
 
@@ -229,8 +232,8 @@ heavy_product = PhysicalProduct("P003", "Heavy Item", 10.00, 1, 3.0)
 
 print(light_product.calculate_shipping_cost())  # Output: 5.0
 print(heavy_product.calculate_shipping_cost())  # Output: 5.0
-
 '''
+
 def main():
     print("========================================") 
     print("INVENTORY MANAGEMENT SYSTEM") 
@@ -277,5 +280,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-'''
