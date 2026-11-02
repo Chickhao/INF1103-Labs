@@ -2,52 +2,52 @@ import json
 
 class Product:
     def __init__(self, product_id, name, price, stock, history=None):
-        self.product_id = product_id
-        self.name = name
-        self.price = price
-        self.stock = stock
-        self.history = [stock] if history is None else history
+        self.__product_id = product_id
+        self.__name = name
+        self.__price = price
+        self.__stock = stock
+        self.__history = [stock] if history is None else history
 
     def get_product_id(self):
-        return self.product_id
+        return self.__product_id
 
     def get_name(self):
-        return self.name
+        return self.__name
 
     def get_price(self):
-        return self.price
+        return self.__price
 
     def get_stock(self):
-        return self.stock
+        return self.__stock
 
     def update_stock(self, quantity):
-        self.stock = quantity
-        self.history.append(self.stock)
+        self.__stock = quantity
+        self.__history.append(self.__stock)
 
     def display_information(self):
         print(
-            f"Product ID: {self.product_id} | Name: {self.name} | Price: ${self.price:.2f} | Stock: {self.stock}"
+            f"Product ID: {self.__product_id} | Name: {self.__name} | Price: ${self.__price:.2f} | Stock: {self.__stock}"
         )
 
     def to_dict(self):
         return {
-            "product_id": self.product_id,
-            "name": self.name,
-            "price": self.price,
-            "stock": self.stock,
-            "history": self.history,
+            "product_id": self.__product_id,
+            "name": self.__name,
+            "price": self.__price,
+            "stock": self.__stock,
+            "history": self.__history,
         }
 
 
 class Inventory:
     def __init__(self):
-        self.products = []
+        self.__products = []
 
     def add_product(self, product):
-        self.products.append(product)
+        self.__products.append(product)
 
     def search_product(self, product_id):
-        for product in self.products:
+        for product in self.__products:
             if product.get_product_id() == product_id:
                 return product
         return None
@@ -55,12 +55,12 @@ class Inventory:
     def display_all(self):
         print("\nCurrent Inventory\n")
         print("-" * 48)
-        for product in self.products:
+        for product in self.__products:
             product.display_information()
         print("-" * 48)
 
     def get_products(self):
-        return self.products.copy()
+        return self.__products.copy()
 
 
 def load_inventory():
@@ -138,7 +138,7 @@ def search_product(inventory):
     if product:
         print("Product Found:\n")
         product.display_information()
-        print(f"Stock History: {product.history}\n")
+        print(f"Stock History: {product._Product__history}\n")
     else:
         print("Product not found.\n")
 

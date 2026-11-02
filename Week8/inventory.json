@@ -35,5 +35,24 @@
             40,
             60
         ]
+    },
+    {
+        "product_id": "P005",
+        "name": "Speakers",
+        "price": 340.0,
+        "stock": 50,
+        "history": [
+            50
+        ]
+    },
+    {
+        "product_id": "P006",
+        "name": "Light",
+        "price": 45.0,
+        "stock": 130,
+        "history": [
+            100,
+            130
+        ]
     }
 ]
