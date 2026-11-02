@@ -35,3 +35,27 @@ class Product:
             "stock": self.stock,
             "history": self.history,
         }
+
+
+class Inventory:
+    def __init__(self):
+        self.products = []
+
+    def add_product(self, product):
+        self.products.append(product)
+
+    def search_product(self, product_id):
+        for product in self.products:
+            if product.get_product_id() == product_id:
+                return product
+        return None
+
+    def display_all(self):
+        print("\nCurrent Inventory\n")
+        print("-" * 48)
+        for product in self.products:
+            product.display_information()
+        print("-" * 48)
+
+    def get_products(self):
+        return self.products.copy()
