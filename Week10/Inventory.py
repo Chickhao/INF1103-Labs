@@ -13,7 +13,7 @@ class Inventory:
                 return product
         return None
 
-    def remove_proiduct(self, product_id: str) -> None:
+    def remove_product(self, product_id: str) -> None:
         product = self.search_product(product_id)
         
         if product is None:
