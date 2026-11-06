@@ -1,0 +1,47 @@
+[
+    {
+        "product_id": "P001",
+        "name": "Laptop",
+        "price": 1200.0,
+        "stock": 15,
+        "history": [
+            15
+        ],
+        "type": "Physical",
+        "weight": 2.0
+    },
+    {
+        "product_id": "P002",
+        "name": "Mouse",
+        "price": 25.5,
+        "stock": 40,
+        "history": [
+            40
+        ],
+        "type": "Physical",
+        "weight": 0.1
+    },
+    {
+        "product_id": "P003",
+        "name": "Keyboard",
+        "price": 45.0,
+        "stock": 25,
+        "history": [
+            25
+        ],
+        "type": "Physical",
+        "weight": 0.8
+    },
+    {
+        "product_id": "P004",
+        "name": "Speaker",
+        "price": 233.0,
+        "stock": 90,
+        "history": [
+            80,
+            90
+        ],
+        "type": "Physical",
+        "weight": 2.5
+    }
+]
