@@ -74,7 +74,7 @@ def add_product(inventory: Inventory) -> None:
         price = float(input("Price: "))
         quantity = int(input("Stock Quantity: "))
 
-        suppliers = {Product.get_supplier().__supplier_id: Product.get_supplier() for product in Inventory.get_products()}
+        suppliers = {product.get_supplier().get_supplier_id(): product.get_supplier() for product in inventory.get_products()}
         supplier_id = input("Supplier ID: ")
 
         if supplier_id in suppliers:
@@ -120,6 +120,7 @@ def search_product(inventory: Inventory) -> None:
     if product:
         print("Product Found:\n")
         product.display_information()
+        product.get_supplier().display_information()
         print(f"Stock History: {product.get_history()}\n")
     else:
         print("Product not found.\n")
