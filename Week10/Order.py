@@ -12,11 +12,7 @@ class Order:
     def get_order_lines(self) -> list[OrderLine]:
         return self.__order_lines.copy()
 
-    def add_order_line(
-        self,
-        product: Product,
-        quantity: int
-    ) -> None:
+    def add_order_line(self, product: Product, quantity: int) -> None:
         self.__order_lines.append(OrderLine(product, quantity))
 
     def remove_order_line(self, index: int) -> None:
@@ -24,9 +20,4 @@ class Order:
 
     def calculate_total(self) -> float:
         return sum(
-            (
-                line.calculate_subtotal()
-                for line in self.__order_lines
-            ),
-            0.0,
-        )
+            (line.calculate_subtotal() for line in self.__order_lines), 0.0,)

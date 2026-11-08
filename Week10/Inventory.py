@@ -25,8 +25,10 @@ class Inventory:
     def display_all(self) -> None:
         print("\nCurrent Inventory\n")
         print("-" * 48)
+
         for product in self.__products:
             product.display_information()
+            
         print("-" * 48)
 
     def get_products(self) -> list[Product]:

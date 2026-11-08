@@ -23,6 +23,9 @@ class Product(ABC):
     def get_stock(self) -> int:
         return self.__stock
 
+    def get_history(self) -> list[int]:
+        return self.__history.copy()
+
     def get_supplier(self) -> Supplier:
         return self.__supplier
 

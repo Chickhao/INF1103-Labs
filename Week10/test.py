@@ -88,3 +88,22 @@ order_b.remove_order_line(0)
 
 assert order_b.calculate_total() == 0.0
 assert inventory_b.find_product("P001") is physical
+
+
+## Liskov Substitution Principle
+def show_product_details(product: Product) -> None:
+    product.display_information()
+    print(product.get_fulfilment_info())
+
+
+show_product_details(physical)
+show_product_details(digital)
+
+
+for product in (physical, digital):
+    previous_history = product.get_history()
+
+    product.update_stock(7)
+
+    assert product.get_stock() == 7
+    assert product.get_history() == previous_history + [7]

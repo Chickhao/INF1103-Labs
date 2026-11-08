@@ -7,7 +7,8 @@ from CanBeShipped import CanBeShipped
 
 
 
-def load_inventory():
+
+def load_inventory() -> Inventory:
     try:
         with open("inventory.json", "r") as file:
             data = json.load(file)
@@ -39,7 +40,7 @@ def load_inventory():
 
     return inventory
 
-def save_inventory(inventory):
+def save_inventory(inventory) -> None:
     data = []
     for product in inventory.get_products():
         data.append(product.to_dict())
@@ -48,7 +49,7 @@ def save_inventory(inventory):
         json.dump(data, file, indent=4)
 
 
-def add_product(inventory):
+def add_product(inventory) -> None:
     print("\nAdd New Product\n")
     product_id = input("Product ID: ")
     name = input("Product Name: ")
@@ -75,7 +76,7 @@ def add_product(inventory):
     inventory.add_product(new_product)
     print("\nProduct added successfully!\n")
 
-def update_stock(inventory):
+def update_stock(inventory) -> None:
     print("\nUpdate Stock")
     product_id = input("Enter Product ID: ")
 
@@ -92,7 +93,7 @@ def update_stock(inventory):
     else:
         print("Product not found.\n")
 
-def search_product(inventory):
+def search_product(inventory) -> None:
     print("\nSearch Product")
     product_id = input("Enter Product ID: ")
 
@@ -104,7 +105,7 @@ def search_product(inventory):
     else:
         print("Product not found.\n")
 
-def main():
+def main() -> None:
     print("========================================") 
     print("INVENTORY MANAGEMENT SYSTEM") 
     print("========================================") 
