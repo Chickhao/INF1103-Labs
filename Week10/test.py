@@ -4,6 +4,7 @@ from DigitalProduct import DigitalProduct
 from Product import Product
 from Supplier import Supplier
 from Inventory import Inventory
+from Order import Order
 
 '''
 physical = PhysicalProduct("P001", "Laptop", 1200.00, 15, 2.0)
@@ -58,4 +59,32 @@ assert inventory_a.find_product("P001") is None
 physical.display_information()
 
 inventory_b.add_product(physical)
+assert inventory_b.find_product("P001") is physical
+
+## Composition
+order_a = Order("O001")
+order_a.add_order_line(physical, 2)
+order_a.add_order_line(digital, 3)
+
+for line in order_a.get_order_lines():
+    print(
+        f"{line.get_product().get_name()} "
+        f"x {line.get_quantity()}: "
+        f"{line.calculate_subtotal():.2f}"
+    )
+
+print(f"Order total: {order_a.calculate_total():.2f}")
+
+order_b = Order("O002")
+order_b.add_order_line(physical, 1)
+
+line_a = order_a.get_order_lines()[0]
+line_b = order_b.get_order_lines()[0]
+
+assert line_a is not line_b
+assert line_a.get_product() is line_b.get_product()
+
+order_b.remove_order_line(0)
+
+assert order_b.calculate_total() == 0.0
 assert inventory_b.find_product("P001") is physical
