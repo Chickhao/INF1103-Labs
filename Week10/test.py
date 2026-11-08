@@ -3,6 +3,7 @@ from PhysicalProduct import PhysicalProduct
 from DigitalProduct import DigitalProduct
 from Product import Product
 from Supplier import Supplier
+from Inventory import Inventory
 
 '''
 physical = PhysicalProduct("P001", "Laptop", 1200.00, 15, 2.0)
@@ -27,6 +28,7 @@ print(heavy_product.calculate_shipping_cost())  # Output: 5.0
 
 '''
 
+## Association
 supplier = Supplier("S001", "Tech Supply", "sales@example.com",)
 
 physical = PhysicalProduct("P001", "Laptop", 1200.00, 15, 2.0, supplier=supplier,)
@@ -43,3 +45,17 @@ del supplier
 
 physical.get_supplier().display_information()
 digital.get_supplier().display_information()
+
+
+## Aggregation
+inventory_a = Inventory()
+inventory_b = Inventory()
+
+inventory_a.add_product(physical)
+inventory_a.remove_product("P001")
+
+assert inventory_a.find_product("P001") is None
+physical.display_information()
+
+inventory_b.add_product(physical)
+assert inventory_b.find_product("P001") is physical
