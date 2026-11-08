@@ -5,6 +5,7 @@ from Product import Product
 from Supplier import Supplier
 from Inventory import Inventory
 from Order import Order
+from math import isclose
 
 '''
 physical = PhysicalProduct("P001", "Laptop", 1200.00, 15, 2.0)
@@ -107,3 +108,56 @@ for product in (physical, digital):
 
     assert product.get_stock() == 7
     assert product.get_history() == previous_history + [7]
+
+
+## Polymorphism
+
+inventory_b.add_product(digital)
+
+for product in inventory_b.get_products():
+    product.display_information()
+    print(product.get_fulfilment_info())
+
+
+## Final Tests
+assert inventory_a.find_product("P001") is None
+assert inventory_b.find_product("P001") is physical
+assert inventory_b.find_product("D001") is digital
+assert inventory_b.find_product("MISSING") is None
+
+assert len(order_a.get_order_lines()) == 2
+assert isclose(order_a.calculate_total(), 2436.00)
+
+# Returned collection copies cannot clear the owner's list.
+inventory_b.get_products().clear()
+assert len(inventory_b.get_products()) == 2
+
+order_a.get_order_lines().clear()
+assert len(order_a.get_order_lines()) == 2
+
+# Retain your Lab 7 abstract-class check.
+try:
+    Product(
+        "P000", "Generic Product", 10.00, 1,
+        supplier=physical.get_supplier(),
+    )
+except TypeError as error:
+    print(f"Abstract class check: {error}")
+else:
+    raise AssertionError("Product should remain abstract")
+
+# Retain your Lab 7 shipping checks.
+light_product = PhysicalProduct(
+    "P002", "Lightweight Item", 10.00, 1, 1.0,
+    supplier=physical.get_supplier(),
+)
+
+heavy_product = PhysicalProduct(
+    "P003", "Heavy Item", 10.00, 1, 3.0,
+    supplier=physical.get_supplier(),
+)
+
+assert light_product.calculate_shipping_cost() == 5.0
+assert heavy_product.calculate_shipping_cost() == 15.0
+
+print("All Lab 8 checks passed.")

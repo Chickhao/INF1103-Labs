@@ -11,7 +11,7 @@ class DigitalProduct(Product):
         print(f"File Size: {self.__file_size} MB")
 
     def get_fulfilment_info(self) -> str:
-        return f"This product is delievered digitally."
+        return "This product is delievered digitally."
 
     def to_dict(self) -> dict[str, object]:
         data = super().to_dict()

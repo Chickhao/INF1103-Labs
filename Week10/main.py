@@ -4,7 +4,7 @@ from PhysicalProduct import PhysicalProduct
 from Inventory import Inventory
 from DigitalProduct import DigitalProduct
 from CanBeShipped import CanBeShipped
-
+from Supplier import Supplier
 
 
 
@@ -19,28 +19,39 @@ def load_inventory() -> Inventory:
         print("inventory.json not found.")
         print("Inventory initialized with default products.\n")
         data = [
-            {"product_id": "P001", "name": "Laptop", "price": 1200.00, "stock": 15, "history": [15], "type": "Physical", "weight": 2.0},
-            {"product_id": "P002", "name": "Mouse", "price": 25.50, "stock": 40, "history": [40], "type": "Physical", "weight": 0.1},
-            {"product_id": "P003", "name": "Keyboard", "price": 45.00, "stock": 25, "history": [25], "type": "Physical", "weight": 0.8}
+            {"product_id": "P001", "name": "Laptop", "price": 1200.00, "stock": 15, "history": [15], "type": "Physical", "weight": 2.0, "supplier": "S000"},
+            {"product_id": "P002", "name": "Mouse", "price": 25.50, "stock": 40, "history": [40], "type": "Physical", "weight": 0.1, "supplier": "S000"},
+            {"product_id": "P003", "name": "Keyboard", "price": 45.00, "stock": 25, "history": [25], "type": "Physical", "weight": 0.8, "supplier": "S000"}
         ]
 
     inventory = Inventory()
+    suppliers: dict[str, Supplier] = {}
 
     for item in data:
+        supplier_data = item.get("supplier") or {"supplier_id": "S000", "name": "Supplier not recorded", "contact_email": "",}
+        supplier_id = supplier_data["supplier_id"]
+
+        if supplier_id not in suppliers:
+            suppliers[supplier_id] = Supplier(supplier_id, supplier_data["name"], supplier_data["contact_email"])
+        supplier = suppliers[supplier_id]
+
+
         if item["type"] == "Physical":
             product = PhysicalProduct(
-                item["product_id"], item["name"], item["price"], item["stock"], item["weight"], item["history"],
+                item["product_id"], item["name"], item["price"], item["stock"], item["weight"], supplier= supplier, history=item.get("history"),
+            )
+        elif item["type"] == "Digital":
+            product = DigitalProduct(
+                item["product_id"], item["name"], item["price"], item["stock"], item["file_size"], supplier=supplier, history=item.get("history"),
             )
         else:
-            product = DigitalProduct(
-                item["product_id"], item["name"], item["price"], item["stock"], item["file_size"], item["history"],
-            )
+            raise ValueError(f"Unknown product type: {item['type']}")
 
         inventory.add_product(product)
 
     return inventory
 
-def save_inventory(inventory) -> None:
+def save_inventory(inventory: Inventory) -> None:
     data = []
     for product in inventory.get_products():
         data.append(product.to_dict())
@@ -49,7 +60,7 @@ def save_inventory(inventory) -> None:
         json.dump(data, file, indent=4)
 
 
-def add_product(inventory) -> None:
+def add_product(inventory: Inventory) -> None:
     print("\nAdd New Product\n")
     product_id = input("Product ID: ")
     name = input("Product Name: ")
@@ -63,12 +74,20 @@ def add_product(inventory) -> None:
         price = float(input("Price: "))
         quantity = int(input("Stock Quantity: "))
 
+        suppliers = {Product.get_supplier().__supplier_id: Product.get_supplier() for product in Inventory.get_products()}
+        supplier_id = input("Supplier ID: ")
+
+        if supplier_id in suppliers:
+            supplier = suppliers[supplier_id]
+        else:
+            supplier = Supplier(supplier_id, input("Supplier Name: "), input("Supplier Email: "),)
+
         if product_type == "1":
             weight = float(input("Weight (kg): "))
-            new_product = PhysicalProduct(product_id, name, price, quantity, weight)
+            new_product = PhysicalProduct(product_id, name, price, quantity, weight, supplier=supplier)
         else:
             file_size = float(input("File Size (MB): "))
-            new_product = DigitalProduct(product_id, name, price, quantity, file_size)
+            new_product = DigitalProduct(product_id, name, price, quantity, file_size, supplier=supplier)
     except ValueError:
         print("Error: Price must be a number and Quantity must be a whole number.\n")
         return
@@ -76,7 +95,7 @@ def add_product(inventory) -> None:
     inventory.add_product(new_product)
     print("\nProduct added successfully!\n")
 
-def update_stock(inventory) -> None:
+def update_stock(inventory: Inventory) -> None:
     print("\nUpdate Stock")
     product_id = input("Enter Product ID: ")
 
@@ -93,7 +112,7 @@ def update_stock(inventory) -> None:
     else:
         print("Product not found.\n")
 
-def search_product(inventory) -> None:
+def search_product(inventory: Inventory) -> None:
     print("\nSearch Product")
     product_id = input("Enter Product ID: ")
 
@@ -101,7 +120,7 @@ def search_product(inventory) -> None:
     if product:
         print("Product Found:\n")
         product.display_information()
-        print(f"Stock History: {product._Product__history}\n")
+        print(f"Stock History: {product.get_history()}\n")
     else:
         print("Product not found.\n")
 

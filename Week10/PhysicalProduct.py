@@ -12,7 +12,7 @@ class PhysicalProduct(Product, CanBeShipped):
         print(f"Weight: {self.__weight} kg")
 
     def get_fulfilment_info(self) -> str:
-        return f"This product requires physical shipping."
+        return "This product requires physical shipping."
 
     def calculate_shipping_cost(self) -> float:
         return self.__weight * 5.00  # Example: $5 per kg
