@@ -1,4 +1,4 @@
-import json
+import json, csv
 from Product import Product
 from PhysicalProduct import PhysicalProduct
 from Inventory import Inventory
@@ -28,48 +28,37 @@ def load_inventory() -> Inventory:
     suppliers: dict[str, Supplier] = {}
 
     for item in data:
-        supplier_data = item.get("supplier") or {"supplier_id": "S000", "name": "Supplier not recorded", "contact_email": "",}
+        supplier_data = item.get("supplier") or {
+            "supplier_id": "S000",
+            "name": "Supplier not recorded",
+            "contact_email": "",
+        }
         supplier_id = supplier_data["supplier_id"]
 
         if supplier_id not in suppliers:
-            suppliers[supplier_id] = Supplier(supplier_id, supplier_data["name"], supplier_data["contact_email"])
+            suppliers[supplier_id] = Supplier(
+                supplier_id,
+                supplier_data["name"],
+                supplier_data["contact_email"],
+            )
+
         supplier = suppliers[supplier_id]
 
-
-        if item["type"] == "Physical":
-            product = ProductFactory.create(
-                product_type=item["type"],
-                product_id=item["product_id"],
-                name=item["name"],
-                price=item["price"],
-                stock_quantity=item["stock"],
-                supplier=supplier,
-                weight=item.get("weight", 0.0),
-                file_size=item.get("file_size", 0.0),
-                history=item.get("history"),
-            )
-
-            inventory.add_product(product)
-        elif item["type"] == "Digital":
-            roduct = ProductFactory.create(
-                product_type=item["type"],
-                product_id=item["product_id"],
-                name=item["name"],
-                price=item["price"],
-                stock_quantity=item["stock"],
-                supplier=supplier,
-                weight=item.get("weight", 0.0),
-                file_size=item.get("file_size", 0.0),
-                history=item.get("history"),
-            )
-
-            inventory.add_product(product)
-        else:
-            raise ValueError(f"Unknown product type: {item['type']}")
+        product = ProductFactory.create(
+            product_type=item["type"],
+            product_id=item["product_id"],
+            name=item["name"],
+            price=item["price"],
+            stock_quantity=item["stock"],
+            supplier=supplier,
+            weight=item.get("weight", 0.0),
+            file_size=item.get("file_size", 0.0),
+            history=item.get("history"),
+        )
 
         inventory.add_product(product)
-
     return inventory
+
 
 def save_inventory(inventory: Inventory) -> None:
     data = []
@@ -91,8 +80,8 @@ def add_product(inventory: Inventory) -> None:
         return
 
     try:
-        price = float(input("Price: "))
-        quantity = int(input("Stock Quantity: "))
+        price = get_positive_float("Price: ")
+        quantity = get_nonnegative_int("Stock Quantity: ")
 
         suppliers = {product.get_supplier().get_supplier_id(): product.get_supplier() for product in inventory.get_products()}
         supplier_id = input("Supplier ID: ")
@@ -140,7 +129,7 @@ def update_stock(inventory: Inventory) -> None:
         print("Product Found:\n")
         print(f"Name: {product.get_name()}\n")
         try:
-            new_quantity = int(input("Enter new stock quantity: "))
+            new_quantity = get_nonnegative_int("Enter new stock quantity: ")
             product.update_stock(new_quantity)
             print("\nStock updated successfully!\n")
         except ValueError:
@@ -160,6 +149,95 @@ def search_product(inventory: Inventory) -> None:
         print(f"Stock History: {product.get_history()}\n")
     else:
         print("Product not found.\n")
+
+def get_positive_float(prompt: str) -> float:
+    while True:
+        try:
+            value = float(input(prompt))
+
+            if value <= 0:
+                print(
+                    "Please enter a number greater than zero."
+                )
+                continue
+
+            return value
+
+        except ValueError:
+            print(
+                "Please enter a valid number, e.g. 12.50"
+            )
+
+def get_nonnegative_int(prompt: str) -> int:
+    while True:
+        try:
+            value = int(input(prompt))
+
+            if value < 0:
+                print(
+                    "Please enter zero or a positive whole number."
+                )
+                continue
+
+            return value
+
+        except ValueError:
+            print("Please enter a valid whole number.")
+
+def load_products(
+    path: str,
+    inventory: Inventory,
+    supplier: Supplier
+) -> None:
+    try:
+        file = open(path, newline="", encoding="utf-8")
+
+    except FileNotFoundError:
+        print(f"Products file not found: {path}")
+
+    else:
+        loaded = 0
+
+        with file:
+            reader = csv.reader(file)
+            next(reader, None)  # Skip the header.
+
+            for row_number, row in enumerate(reader, start=2):
+                try:
+                    if len(row) != 5:
+                        raise ValueError(
+                            "Expected five CSV fields."
+                        )
+
+                    (
+                        product_type,
+                        product_id,
+                        name,
+                        price_text,
+                        stock_text,
+                    ) = row
+
+                    product = ProductFactory.create(
+                        product_type=product_type,
+                        product_id=product_id,
+                        name=name,
+                        price=float(price_text),
+                        stock_quantity=int(stock_text),
+                        supplier=supplier,
+                    )
+
+                    inventory.add_product(product)
+                    loaded += 1
+
+                except ValueError as error:
+                    print(
+                        f"Skipping row {row_number}: {error}"
+                    )
+
+        print(f"{loaded} products loaded.")
+
+    finally:
+        print("Load attempt finished.")
 
 def main() -> None:
     print("========================================") 

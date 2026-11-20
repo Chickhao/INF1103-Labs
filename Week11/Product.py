@@ -3,13 +3,19 @@ from Supplier import Supplier
 
 
 class Product(ABC):
-    def __init__(self, product_id: str, name: str, price: float, stock:int, supplier: Supplier, history: list[int] | None = None) -> None:
+    def __init__(self,product_id: str,name: str,price: float,stock: int,supplier: Supplier,history: list[int] | None = None) -> None:
+        if price <= 0:
+            raise ValueError("Price must be greater than zero.")
+
+        if stock < 0:
+            raise ValueError("Stock quantity cannot be negative.")
+
         self.__product_id: str = product_id
         self.__name: str = name
         self.__price: float = price
         self.__stock: int = stock
         self.__supplier: Supplier = supplier
-        self.__history: list[int] = [stock] if history is None else history
+        self.__history: list[int] = ([stock] if history is None else history.copy())
 
     def get_product_id(self) -> str:
         return self.__product_id
@@ -30,8 +36,10 @@ class Product(ABC):
         return self.__supplier
 
     def update_stock(self, quantity: int) -> None:
+        if quantity < 0:
+            raise ValueError("Stock quantity cannot be negative.")
         self.__stock = quantity
-        self.__history.append(self.__stock)
+        self.__history.append(quantity)
 
     @abstractmethod
     def get_fulfilment_info(self) -> str:

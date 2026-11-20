@@ -6,6 +6,7 @@ from Supplier import Supplier
 from Inventory import Inventory
 from Order import Order
 from math import isclose
+from ProductFactory import ProductFactory
 
 '''
 physical = PhysicalProduct("P001", "Laptop", 1200.00, 15, 2.0)
@@ -168,3 +169,24 @@ assert light_product.calculate_shipping_cost() == 5.0
 assert heavy_product.calculate_shipping_cost() == 15.0
 
 print("All Lab 8 checks passed.")
+
+
+physical = ProductFactory.create(
+    "physical",
+    "P001",
+    "Laptop",
+    1200.00,
+    15,
+    supplier,
+    weight=2.0,
+)
+
+digital = ProductFactory.create(
+    "digital",
+    "D001",
+    "E-book",
+    12.00,
+    100,
+    supplier,
+    file_size=50.0,
+)
