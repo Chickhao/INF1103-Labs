@@ -5,7 +5,7 @@ from Inventory import Inventory
 from DigitalProduct import DigitalProduct
 from CanBeShipped import CanBeShipped
 from Supplier import Supplier
-
+from ProductFactory import ProductFactory
 
 
 def load_inventory() -> Inventory:
@@ -37,13 +37,33 @@ def load_inventory() -> Inventory:
 
 
         if item["type"] == "Physical":
-            product = PhysicalProduct(
-                item["product_id"], item["name"], item["price"], item["stock"], item["weight"], supplier= supplier, history=item.get("history"),
+            product = ProductFactory.create(
+                product_type=item["type"],
+                product_id=item["product_id"],
+                name=item["name"],
+                price=item["price"],
+                stock_quantity=item["stock"],
+                supplier=supplier,
+                weight=item.get("weight", 0.0),
+                file_size=item.get("file_size", 0.0),
+                history=item.get("history"),
             )
+
+            inventory.add_product(product)
         elif item["type"] == "Digital":
-            product = DigitalProduct(
-                item["product_id"], item["name"], item["price"], item["stock"], item["file_size"], supplier=supplier, history=item.get("history"),
+            roduct = ProductFactory.create(
+                product_type=item["type"],
+                product_id=item["product_id"],
+                name=item["name"],
+                price=item["price"],
+                stock_quantity=item["stock"],
+                supplier=supplier,
+                weight=item.get("weight", 0.0),
+                file_size=item.get("file_size", 0.0),
+                history=item.get("history"),
             )
+
+            inventory.add_product(product)
         else:
             raise ValueError(f"Unknown product type: {item['type']}")
 
@@ -84,10 +104,26 @@ def add_product(inventory: Inventory) -> None:
 
         if product_type == "1":
             weight = float(input("Weight (kg): "))
-            new_product = PhysicalProduct(product_id, name, price, quantity, weight, supplier=supplier)
+            new_product = ProductFactory.create(
+                "physical",
+                product_id,
+                name,
+                price,
+                quantity,
+                supplier,
+                weight=weight,
+            )
         else:
             file_size = float(input("File Size (MB): "))
-            new_product = DigitalProduct(product_id, name, price, quantity, file_size, supplier=supplier)
+            new_product = ProductFactory.create(
+                "digital",
+                product_id,
+                name,
+                price,
+                quantity,
+                supplier,
+                file_size=file_size,
+            )
     except ValueError:
         print("Error: Price must be a number and Quantity must be a whole number.\n")
         return
